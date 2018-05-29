@@ -1,9 +1,9 @@
 /***********************************************************************
 * Program:
 *    Lab 06, Vulnerabilities and Exploits
-*    Brother Helfrich, CS470
+*    Brother Wilson,, CS470
 * Author:
-*    your name
+*    Bryan Muller
 * Summary: 
 *    This program is designed to demonstrate memory injection vulnerabilities.
 *
@@ -132,18 +132,45 @@ void subterfugeExploit()
  * 2. the buffer must be reachable from an external input
  * 3. The mechanism to fill the buffer must not check the correct buffersize
  **********************************************/
-void stackVulnerability(/* feel free to add parameters */)
+void stackVulnerability(long int uncheckedBuffer[], long int size)
 {
 
+   // Receives a userInput buffer.
+   // Copies the userInput buffer into an uncheckedBuffer
+
+   // small vulnerable buffer.  Poor buffer!
+   long int i = 0;
+   long int vulnerableBuffer[2];                  // 1. Buffer on the stack
+
+   // copy the array
+   for (i = 0; i < size; i++)                      // 3. Wrong buffer size
+   {
+      cout << i << " " << vulnerableBuffer[i] << endl;
+      vulnerableBuffer[i] = uncheckedBuffer[i];   // 2. Buffer reachable
+
+   }
+
 }
+
+void hacked()
+{
+   cout << "Your stack done been smashed" << endl;
+}
+
 
 /*********************************************
  * STACK EXPLOIT
  * 1. The attacker must provide more data into the
- *    outwardly facing buffer than the buffer is designed to hold
+ *    outwardly facing buffer than the buffer   int buffer[12] = {0, 1, 2, 3, 4, 5, 6, (long int) &displayMessage};
+
+   stackVulnerability(buffer, sizeof(buffer)/sizeof(buffer[0]));
+}is designed to hold
  * 2. The attacker must know where the the stack pointer resides
  *    on the stack. This should be just beyond the end of the buffer
- * 3. The attacker must insert machine language instructions in the buffer.
+ * 3. The attacker must insert machine languag  int buffer[12] = {0, 1, 2, 3, 4, 5, 6, (long int) &displayMessage};
+
+   stackVulnerability(buffer, sizeof(buffer)/sizeof(buffer[0]));
+}e instructions in the buffer.
  *    This may occur before, after, or even around the stack pointer. The
  *    machine language could be already compiled code in the program
  * 4. The attacker must overwrite the stack pointer. The old value,
@@ -153,7 +180,21 @@ void stackVulnerability(/* feel free to add parameters */)
  *********************************************/
 void stackExploit()
 {
+   long int buffer[12] =                         // 1. more data
+         { 0, 1, 2, 3, 4, 5, 6, (long int)&hacked };      // 2. stack pointer
+   // 3. compiled code
+
+   cout << "address of stackExploit: "
+        <<  hex << (void *)&stackExploit << endl;
+   cout << "stackExploit() -- begin\n";
+   stackVulnerability(buffer,                    // 4. overwrite stack pointer
+                      sizeof(buffer)/sizeof(buffer[0]));
+   cout << "stackExploit() -- end\n";
 }
+//   int buffer[12] = {0, 1, 2, 3, 4, 5, 6, (long int) &displayMessage};
+//
+//   stackVulnerability(buffer, sizeof(buffer)/sizeof(buffer[0]));
+//}
 
 /**************************************************************
  **************************************************************
